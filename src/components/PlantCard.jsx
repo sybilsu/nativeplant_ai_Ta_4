@@ -20,6 +20,23 @@ function photoBase(dbPhoto) {
   return (dbPhoto || "").replace(/\.[^.]+$/, "");
 }
 
+// Pointer-reactive 3D tilt (+ lift), applied imperatively to avoid a re-render per
+// mousemove. Combined into one transform so it doesn't fight the CSS hover state.
+const TILT_MAX_DEG = 8;
+function tiltOnMove(e) {
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+  const el = e.currentTarget;
+  const r = el.getBoundingClientRect();
+  const px = (e.clientX - r.left) / r.width - 0.5; // -0.5 .. 0.5
+  const py = (e.clientY - r.top) / r.height - 0.5;
+  el.style.transform =
+    `perspective(600px) rotateX(${(-py * TILT_MAX_DEG).toFixed(2)}deg) ` +
+    `rotateY(${(px * TILT_MAX_DEG).toFixed(2)}deg) translateY(-5px) scale(1.05)`;
+}
+function tiltReset(e) {
+  e.currentTarget.style.transform = "";
+}
+
 function PhotoThumb({ base, slot, alt, index = 0 }) {
   // src resolution order: variant -> (近景 only) base photo -> placeholder
   const variantUrl = base ? `/photos/${encodeURIComponent(base + slot.suffix)}.jpg` : null;
@@ -43,6 +60,8 @@ function PhotoThumb({ base, slot, alt, index = 0 }) {
       <div
         className="photo-tile"
         style={{ aspectRatio: "1 / 1", animationDelay: `${index * 90}ms` }}
+        onMouseMove={tiltOnMove}
+        onMouseLeave={tiltReset}
       >
         {failed ? (
           <div
