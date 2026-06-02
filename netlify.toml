@@ -17,10 +17,9 @@
   to     = "/.netlify/functions/:splat"
   status = 200
 
-[[redirects]]
-  from   = "/*"
-  to     = "/index.html"
-  status = 200
+# SPA fallback intentionally omitted in v1 — single page app, no client routing.
+# Re-add when react-router is introduced, but use Accept-header condition so it
+# doesn't intercept Vite's /src/*.jsx during `netlify dev`.
 
 [build.environment]
   NODE_VERSION = "20"
