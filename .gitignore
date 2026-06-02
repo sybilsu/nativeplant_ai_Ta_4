@@ -8,3 +8,6 @@ experiment/run_*/input.jpg
 /5b3*.png
 /5b3*.jpg
 
+
+# Local Netlify folder
+.netlify
