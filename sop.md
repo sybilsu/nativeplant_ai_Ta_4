@@ -67,6 +67,8 @@
 **Cost per run:** Sonnet ~$0.03–0.04; Haiku ~$0.02
 **Retry:** 4 attempts, exponential backoff (5s / 15s / 45s) on 408/429/500/502/503/504/529
 
+> **Production differs from this CLI prototype.** The deployed `/api/identify` Netlify function is **Haiku-primary** with a 12s × 2 bounded retry — Sonnet Vision exceeds Netlify's ~26s synchronous-function limit (see spec.md F1.4). This section documents the offline experiment script, which has no such limit and may use Sonnet.
+
 ### 3.1 Vision identification prompt (verbatim — must NOT mention color)
 
 ```
@@ -146,13 +148,13 @@ shortlist[cat] = pool[cat].filter(p =>
 | Task | Model | $/M in | $/M out | Why |
 |---|---|---|---|---|
 | CSV color enrichment (one-shot) | Haiku 4.5 | $1 | $5 | Structured extraction from short text |
-| Image identification (per query) | Sonnet 4.6 | $3 | $15 | Vision accuracy matters; ~12 plants identified per call vs Haiku's ~6 |
-| Image identification (fallback / budget mode) | Haiku 4.5 | $1 | $5 | When Sonnet overloaded (529) OR cost-conscious user |
+| Image identification — **production** (per query) | Haiku 4.5 | $1 | $5 | Sonnet can't fit Netlify's ~26s sync limit; Haiku is fast + cost-optimal (~6 plants/call) |
+| Image identification — offline CLI / future background fn | Sonnet 4.6 | $3 | $15 | Higher accuracy (~12 plants/call); only where there is no function timeout |
 | Scoring | none (code) | — | — | Deterministic |
 | Color filter | none (code) | — | — | Deterministic |
 | Documents / SOP refresh | Opus 4.7 | $15 | $75 | Use sparingly. Once per major spec revision. |
 
-**Per-user query budget target:** ≤ $0.05 (1 Sonnet vision call). 1000 queries/month ≈ $50.
+**Per-user query budget target:** ≤ $0.02 (1 Haiku vision call, production). 1000 queries/month ≈ $20. (A Sonnet path would be ~$0.05/query ≈ $50/mo.)
 
 **Hardening for production:**
 - Image compression before send (long-edge ≤1280px) → ~50% token savings on vision
@@ -177,7 +179,7 @@ shortlist[cat] = pool[cat].filter(p =>
 **Critical conclusion:** Algorithm works. **25-plant DB is the bottleneck.** Production needs DB expansion to ≥200 species before this tool is useful for general landscape design queries.
 
 **Sub-findings:**
-- Sonnet identifies ~2× more plants per image than Haiku (12.5 vs 6.3 avg). Use Sonnet in production.
+- Sonnet identifies ~2× more plants per image than Haiku (12.5 vs 6.3 avg). _However, production runs Haiku_ — Sonnet Vision exceeds Netlify's ~26s synchronous-function limit (see spec.md F1.4); a Sonnet path would need a background function. Acceptable for now since the 25-species DB is the real bottleneck.
 - European garden styles produce low match rates against Taiwan native DB — expected, by design.
 - Image 5 (modern Taiwanese-style planting) produced higher DB hit rate per identified plant.
 - Vision models occasionally mis-categorize shrubs vs trees (run_05 included 白千層/蒲葵 as 喬木). Script filters silently — acceptable, but log for QA.

@@ -25,7 +25,7 @@ npm run build
 |---|---|
 | `src/` | React 前端 (App + 7 components + services) |
 | `netlify/functions/` | Serverless API (identify, report, db-version, agent stubs, cron) |
-| `data/` | `plants_enriched.json` — DB,Phase A 一次性產出 |
+| `data/` | `plants_enriched.json` — DB 種子(seed);線上以 Netlify Blobs 為主,此檔為 fallback |
 | `scripts/` | `enrich_csv.mjs` (CLI 補欄位), `run_step1.mjs` (CLI 實驗) |
 | `taiwan native/` | 原始 CSV + 植物照片 (25 種) |
 | `experiment/` | 5 次原型實驗結果 |
@@ -42,8 +42,8 @@ git add . && git commit -m "..." && git push
 
 Netlify env vars 必設:
 - `ANTHROPIC_API_KEY`
-- `SONNET_MODEL=claude-sonnet-4-6`
-- `HAIKU_MODEL=claude-haiku-4-5-20251001`
+- `HAIKU_MODEL=claude-haiku-4-5-20251001`(identify Vision 用)
+- `SONNET_MODEL=claude-sonnet-4-6`(目前 identify 未使用,保留給未來 Sonnet 路徑)
 - (Phase 7 才需要) `OPENCLAW_SHARED_SECRET`
 
 ## 設計原則

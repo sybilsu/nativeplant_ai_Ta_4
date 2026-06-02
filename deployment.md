@@ -5,6 +5,8 @@
 **Pre-reads:** `spec.md`, `design.md`, `sop.md`.
 **Total time estimate:** 90–120 min the first time you do this; ~15 min for subsequent re-builds.
 
+> **Status (2026-06-03):** 植徑 v.2 is already built and **deployed live** at https://nativeplant-ai-ta-4.netlify.app via the Netlify CLI (`netlify deploy --build --prod`). It was scaffolded in Claude Code rather than Antigravity; the walkthrough below is retained as reference / re-build guide. Outstanding owner actions: **(1)** enable git-push auto-deploy (Phase 5 note), **(2)** seed the production Blob (Phase 6.2).
+
 > **Reading rule:** Follow steps **in order**. Don't jump ahead. If a step looks different in your Antigravity version, use the **goal** column on the right to verify you achieved what the step intended, not the exact button names.
 
 ---
@@ -87,7 +89,7 @@ When done, run `npm run dev` and report the URL.
 
 **Common Antigravity blockers:**
 - If it asks "which animation library?" → answer: **none required; use CSS transitions per design.md §7**
-- If it asks "include a header logo image?" → answer: **text logo only, Playfair Display "植徑 Ta_4"**
+- If it asks "include a header logo image?" → answer: **text logo only, Playfair Display "植徑 v.2"**
 - If it asks "user authentication?" → answer: **NO — out of scope per spec.md §8**
 
 ---
@@ -102,7 +104,7 @@ Before pushing anything, prove it works locally.
 | 3.2 | Create `.env` if not auto-created: copy from `Ta_4/.env` (which already has the key) | `.env` contains `ANTHROPIC_API_KEY=sk-ant-...` |
 | 3.3 | Install Netlify CLI globally if not present: `npm install -g netlify-cli` | `netlify --version` prints a version |
 | 3.4 | Run `netlify dev` (this runs Vite + Functions together) | Browser opens to `http://localhost:8888` |
-| 3.5 | Drop `experiment/run_01/input.jpg` onto the upload zone | Within 6s you see the Identified list + 2 plants in 草本 pool (matching the prototype) |
+| 3.5 | Drop `experiment/run_01/input.jpg` onto the upload zone | Within ~10s you see the Identified list + a 草本 pool. (Counts may differ slightly from the Sonnet prototype since v1 runs Haiku Vision — see spec.md F1.4.) |
 | 3.6 | Open browser DevTools → Network tab → click `/api/identify` request → check that NO `ANTHROPIC_API_KEY` appears in request/response headers or body | Key is never visible client-side |
 | 3.7 | Drag the 紫 swatch into the palette tray | "0 / 2 株符合選色" — same as prototype Step 2 result |
 
@@ -125,11 +127,13 @@ Before pushing anything, prove it works locally.
 
 ## Phase 5 — Deploy to Netlify (10 min)
 
+> **Already deployed via CLI.** The steps below (Import from Git) are how you **enable git-push auto-deploy** on the existing site `nativeplant-ai-ta-4` — Site configuration → Build & deploy → Continuous deployment → **Link repository** → GitHub → `sybilsu/nativeplant_ai_Ta_4` → branch `main`. Env vars (Phase 5.3) are already set. Until linked, redeploy with `netlify deploy --build --prod`.
+
 | Step | Action | Goal / Verify |
 |---|---|---|
 | 5.1 | On netlify.com → **Add new site → Import from Git → GitHub → nativeplant_ai_Ta_4** | Build settings auto-populate |
 | 5.2 | Confirm: Build command `npm run build`, Publish directory `dist`, Functions directory `netlify/functions` | Settings match `netlify.toml` |
-| 5.3 | Site settings → **Environment variables** → add: `ANTHROPIC_API_KEY=<your key>`, `SONNET_MODEL=claude-sonnet-4-6`, `HAIKU_MODEL=claude-haiku-4-5-20251001` | Three env vars listed |
+| 5.3 | Site settings → **Environment variables** → add: `ANTHROPIC_API_KEY=<your key>`, `HAIKU_MODEL=claude-haiku-4-5-20251001` (and `SONNET_MODEL=claude-sonnet-4-6`, currently unused by identify — kept for future Sonnet path) | Env vars listed |
 | 5.4 | (Optional but recommended) **Build → Scheduled functions** → confirm `enrich-cron.js` shows up. Set cron to `0 19 * * 0` (Sunday 19:00 UTC = Monday 03:00 Asia/Taipei) | Schedule chip appears |
 | 5.5 | Trigger first deploy: **Deploys → Trigger deploy → Deploy site** | Build log shows green ✓ within 3 min |
 | 5.6 | Open the assigned URL (e.g., `https://nativeplant-ai-ta-4.netlify.app`) and run the same upload test as Phase 3 | Production matches local behavior |
@@ -144,8 +148,8 @@ Before pushing anything, prove it works locally.
 | Step | Action | Goal / Verify |
 |---|---|---|
 | 6.1 | Netlify dashboard → **Functions → enrich-cron** | Function listed |
-| 6.2 | Click **"Trigger run"** to test manually | Logs show 25 plants enriched, no errors |
-| 6.3 | Confirm `/api/db-version` endpoint returns a fresh timestamp | JSON includes `"updated_at": "2026-06-02..."` |
+| 6.2 | Click **"Trigger run"** to test manually (this also **seeds the production Blob** the first time) | Logs show `{"type":"enrich_cron_done","count":25}` (Haiku re-enrichment → written to Netlify Blobs store `plant-db`) |
+| 6.3 | Confirm `/api/db-version` flips from the seed to the Blob copy | JSON changes from `"source":"seed","updated_at":null` to `"source":"blob"` with a real `"updated_at"` timestamp |
 | 6.4 | (Wait until Monday 03:00 TPE) confirm cron auto-fired in logs | Function ran without manual trigger |
 
 ---
@@ -255,7 +259,7 @@ openclaw config set http.bind 127.0.0.1:8080
 | `CORS error` | Request URL in Network tab | Use `/api/identify`, never `https://api.anthropic.com/...` directly from client |
 | `API key not found` | Netlify env vars panel | Add `ANTHROPIC_API_KEY` to BOTH local `.env` and Netlify Dashboard |
 | `Image too large` | Size in console log | Verify client-side compression is running before POST; fallback: server-side sharp |
-| Sonnet 529 in production | API status page anthropic.com/status | Confirm retry-with-backoff is wired; verify Haiku fallback path |
+| identify returns 503 "辨識服務忙線" | Haiku overloaded (429/529) or >12s×2 | Transient — client can resubmit (response carries `retryable:true`). Check anthropic.com/status. |
 | Cron didn't fire | Netlify Functions → Scheduled → cron expression | Verify expression is UTC and matches Sunday 19:00 |
 | OpenClaw can't reach Ta_4 | OpenClaw logs `talk_to_ta4` | Verify HMAC secret matches both sides; verify TLS cert valid |
 | Empty results for valid image | Check `step1_identified.json` from prototype | DB is the bottleneck — see `sop.md` §7. Not a bug. |

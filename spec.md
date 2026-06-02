@@ -40,8 +40,8 @@ A web app where a landscape designer **drops a reference image** of any planting
 |---|---|
 | F1.1 | Drag-drop or click-upload single image. JPG, PNG, WebP. Up to 10 MB on client (server compresses). |
 | F1.2 | Client-side compression to ≤1280px long edge, JPEG q85, before POST. |
-| F1.3 | Server-side POST `/api/identify` with base64 image → returns identified JSON in ≤6s p95. |
-| F1.4 | Server uses Sonnet 4.6 Vision (configurable env var `VISION_MODEL`). On 429/529, retry 3× with exponential backoff (5s/15s/45s); on persistent failure, fall back to Haiku 4.5 with a UI banner labeling "節能模式". |
+| F1.3 | Server-side POST `/api/identify` (multipart `image`) → returns ranked pool JSON. ~10s typical (Haiku Vision); bounded ≤~25s to fit Netlify's synchronous-function limit. |
+| F1.4 | Server runs **Haiku 4.5 Vision** (`HAIKU_MODEL`). _v1 reality:_ Sonnet 4.6 Vision empirically needs >16s for this workload and cannot fit Netlify's ~26s synchronous-function limit alongside a fallback, so identify is Haiku-primary (fast, cost-optimal). One retry on transient 408/429/5xx/529 (12s cap each, ≤~25s total); on persistent failure return a friendly retryable 503. Sonnet-quality vision would require moving identify to a background function + client polling (deferred). |
 | F1.5 | Identification output includes for each plant: `id, common_name, category, form, foliage, height_estimate_m, spread_estimate_m, ornament, confidence` (per `sop.md` §3.1). NO color in identification output. |
 | F1.6 | The full identification list is **always shown to the user**, regardless of whether any DB matches exist. (Transparency rule.) |
 
@@ -78,9 +78,9 @@ A web app where a landscape designer **drops a reference image** of any planting
 
 | ID | Requirement |
 |---|---|
-| F5.1 | Canonical DB = `taiwan native/2026_植物屬性表.csv` (operator-edited). Production app reads `data/plants_enriched.json` produced by `enrich_csv.mjs`. |
-| F5.2 | Scheduled function refreshes enriched JSON weekly (Sunday 03:00 Asia/Taipei) — see `deployment.md` §5. |
-| F5.3 | Enrichment is incremental: only re-run Haiku extraction on rows whose source NOTES changed since last enrichment (track per-row hash). |
+| F5.1 | Canonical DB = `taiwan native/2026_植物屬性表.csv` (operator-edited). `enrich_csv.mjs` produces `data/plants_enriched.json`, shipped as the bundled **seed**. Production reads from **Netlify Blobs** first (store `plant-db`, key `enriched`) and falls back to the bundled seed when the Blob is empty. |
+| F5.2 | Scheduled function `enrich-cron` re-runs Haiku enrichment weekly (Sun 19:00 UTC = Mon 03:00 Asia/Taipei) and writes the result to Netlify Blobs — Functions have a read-only filesystem, so the writable copy lives in Blobs, not `data/`. See `deployment.md` §5–6. |
+| F5.3 | _Deferred (v1 re-runs all rows each cron)._ Target: incremental enrichment — only re-run Haiku extraction on rows whose source NOTES changed since last run (per-row hash). At 25 rows the full re-run is cheap; revisit as the DB grows. |
 | F5.4 | DB version stamp (UTC timestamp of last successful enrichment) exposed at `/api/db-version` and shown in app footer. |
 
 ### 3.6 OpenClaw Integration (chat UI front-end only)
@@ -99,7 +99,7 @@ The system supports N specialized agents behind a common interface. Initial agen
 
 | Agent | Role | Model | Has DB access? |
 |---|---|---|---|
-| `identifier` | Vision identification (Step 1) | Sonnet 4.6 → Haiku 4.5 fallback | Read |
+| `identifier` | Vision identification (Step 1) | Haiku 4.5 (see F1.4) | Read |
 | `palette_advisor` | Suggest color palettes from a reference image or Pantone | Haiku 4.5 | Read |
 | `ecology_check` | Warn if pool species have ecological conflicts (e.g., overlapping niche, allelopathy) | Haiku 4.5 | Read |
 | `sourcing_helper` | Suggest nurseries / research centers for a given species | Haiku 4.5 + web search (whitelisted domains) | Read |
@@ -225,7 +225,7 @@ interface Match {
 | `/api/db-version` | GET | none | Latest enrichment timestamp + count. |
 | `/api/agent/<name>` | POST | HMAC-SHA256 | OpenClaw → Ta_4 agent invocation. |
 | `/api/report` | POST | rate-limited | "Plant not found" feedback form. |
-| `/api/__cron/enrich` | POST | Netlify-internal token | Weekly Phase A re-run. |
+| `enrich-cron` (scheduled fn, not public HTTP) | — | Netlify scheduler | Weekly Phase A re-run → writes Blobs. Manual: dashboard "Functions → enrich-cron → Trigger run". |
 
 **Rate limits:** 60 req/min per IP on `/api/identify` and `/api/report`. Burst: 10.
 
