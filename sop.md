@@ -58,6 +58,36 @@
 
 **Decomposition rules:** 紫紅→[紫,紅]; 粉紅→[粉,紅]; 銀白→[銀,白]; 桃紅→[粉,紅]; 淡紫→[紫]; 灰綠→[灰,綠]
 
+### 2.1 Measured colors (colorimeter → Pantone) — overrides the Haiku guess
+
+The Haiku color in §2 is a fallback. When the operator measures a real color, that
+value is **ground truth**: it maps deterministically to the 12-vocab (no LLM) and the
+field skips Haiku (more accurate + cheaper). Logic in `lib/pantone.mjs`
+(`hexToVocab` = nearest of 12 by CIELAB ΔE).
+
+**Edit file:** `data/color_overrides.csv` — pre-seeded with all species names, one row each.
+Open in Excel/any editor. Columns:
+
+| name | flower_hex | flower_pantone | fruit_hex | fruit_pantone | leaf_hex | leaf_pantone |
+|---|---|---|---|---|---|---|
+| 野牡丹 | `#9B5FA6` | PANTONE 2080C | | | `#3C6B3E` | |
+
+**Procedure:**
+1. Measure flower/fruit/leaf with the colorimeter → record the **sRGB HEX** (and the
+   Pantone code if you want it shown as a label).
+2. Fill the relevant cell(s) for that species. Leave blank = keep the Haiku guess for
+   that field. HEX is required for the mapping — a Pantone code alone is **not**
+   convertible (no open Pantone→RGB table; the lookup in `lib/pantone.mjs` is empty
+   by design).
+3. Commit + deploy, then **Functions → enrich-cron → Trigger run** (or wait for the
+   Sunday cron). Filled fields now render their true measured color in the card and
+   stop costing a Haiku call.
+
+**Caveat:** the 12 buckets are coarse at vivid/edge hues (hot-pink→紅, indigo→紫) because
+the vocab swatches are muted. Fine for typical flower colors; if a bucket feels wrong,
+tune `VOCAB_HEX` in `lib/pantone.mjs` **and** `COLOR_VOCAB` in `src/components/ColorTray.jsx`
+together (they must match).
+
 ---
 
 ## 3. Step 1 — Image Identification + Scoring
