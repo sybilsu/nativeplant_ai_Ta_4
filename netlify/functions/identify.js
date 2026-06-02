@@ -268,6 +268,10 @@ export default async (req) => {
           flower_color: d.flower_color,
           leaf_color: d.leaf_color,
           fruit_color: d.fruit_color,
+          // Measured-color extras (present once enrich-cron applies color_overrides.csv)
+          flower_hex: d.flower_hex,
+          fruit_hex: d.fruit_hex,
+          leaf_hex: d.leaf_hex,
           score: r.score,
           stars: starsOf(r.score),
           matched_input: inp.id,

@@ -98,33 +98,38 @@ function Stars({ n }) {
   );
 }
 
-function ColorDots({ keys, label }) {
+// `accentHex` (optional): the measured colorimeter hex for this field. When
+// present the dot shows the true measured color instead of the vocab swatch.
+function ColorDots({ keys, label, accentHex }) {
   if (!keys || keys.length === 0) return null;
   return (
     <span className="inline-flex items-center gap-1">
       <span className="text-xs" style={{ color: "var(--ink-tertiary)" }}>
         {label}
       </span>
-      {keys.map((k) => (
-        <span
-          key={k}
-          className="inline-flex items-center gap-0.5 text-[10px] px-1 py-0.5 rounded"
-          style={{ background: "var(--mat-thin)", color: "var(--ink-secondary)" }}
-          title={k}
-        >
+      {keys.map((k) => {
+        const dotHex = accentHex || colorHex(k);
+        return (
           <span
-            className="inline-block rounded-full"
-            style={{
-              width: 8,
-              height: 8,
-              background: colorHex(k),
-              border: k === "白" ? "0.5px solid var(--hairline-dark)" : "none",
-            }}
-            aria-hidden
-          />
-          {k}
-        </span>
-      ))}
+            key={k}
+            className="inline-flex items-center gap-0.5 text-[10px] px-1 py-0.5 rounded"
+            style={{ background: "var(--mat-thin)", color: "var(--ink-secondary)" }}
+            title={accentHex ? `${k} · 實測 ${accentHex}` : k}
+          >
+            <span
+              className="inline-block rounded-full"
+              style={{
+                width: 8,
+                height: 8,
+                background: dotHex,
+                border: k === "白" ? "0.5px solid var(--hairline-dark)" : "none",
+              }}
+              aria-hidden
+            />
+            {k}
+          </span>
+        );
+      })}
     </span>
   );
 }
@@ -184,9 +189,9 @@ export default function PlantCard({ plant, weak = false }) {
       </dl>
 
       <div className="mt-2 flex flex-wrap gap-2">
-        <ColorDots keys={plant.flower_color} label="花" />
-        <ColorDots keys={plant.fruit_color} label="果" />
-        <ColorDots keys={plant.leaf_color} label="葉" />
+        <ColorDots keys={plant.flower_color} label="花" accentHex={plant.flower_hex} />
+        <ColorDots keys={plant.fruit_color} label="果" accentHex={plant.fruit_hex} />
+        <ColorDots keys={plant.leaf_color} label="葉" accentHex={plant.leaf_hex} />
       </div>
 
       <div

@@ -8,24 +8,33 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { deriveCategory, extractColors } from "../../lib/enrich-core.mjs";
+import { deriveCategory, parseOverridesCsv, resolveColorsForRow } from "../../lib/enrich-core.mjs";
 import { writeDbToBlob } from "../../lib/db-store.mjs";
 
 const moduleDir = dirname(fileURLToPath(import.meta.url));
 
-async function loadSeed() {
-  const candidates = [
-    resolve(moduleDir, "../../data/plants_enriched.json"),
-    resolve(process.cwd(), "data/plants_enriched.json"),
-  ];
-  for (const p of candidates) {
-    try {
-      return JSON.parse(await readFile(p, "utf-8"));
-    } catch {
-      /* try next */
+async function readFirst(relPaths) {
+  for (const rel of relPaths) {
+    for (const p of [resolve(moduleDir, rel), resolve(process.cwd(), rel.replace("../../", ""))]) {
+      try {
+        return await readFile(p, "utf-8");
+      } catch {
+        /* try next */
+      }
     }
   }
-  throw new Error("seed plants_enriched.json not found");
+  return null;
+}
+
+async function loadSeed() {
+  const raw = await readFirst(["../../data/plants_enriched.json"]);
+  if (!raw) throw new Error("seed plants_enriched.json not found");
+  return JSON.parse(raw);
+}
+
+async function loadOverrides() {
+  const raw = await readFirst(["../../data/color_overrides.csv"]);
+  return parseOverridesCsv(raw || ""); // empty Map if the file is absent
 }
 
 export default async () => {
@@ -37,15 +46,19 @@ export default async () => {
   }
 
   const seed = await loadSeed();
+  const overrides = await loadOverrides();
   const enriched = [];
-  let failed = 0;
+  let failed = 0, measuredFields = 0;
   // Sequential to stay gentle on rate limits; 25 rows × Haiku ≈ a few seconds.
   // Scheduled functions run in the background context (15 min budget), so this
-  // is not bound by the synchronous-function limit.
+  // is not bound by the synchronous-function limit. Fields with a measured
+  // color (color_overrides.csv) skip Haiku entirely.
   for (const row of seed) {
     const category = deriveCategory(row);
+    const cn = (row["Name (中文名/學名)"] || "").split(" / ")[0].trim();
     try {
-      const colors = await extractColors(row, apiKey, model);
+      const colors = await resolveColorsForRow(row, overrides.get(cn), apiKey, model);
+      measuredFields += ["flower", "fruit", "leaf"].filter((f) => colors[`${f}_source`] === "measured").length;
       enriched.push({ ...row, category, ...colors });
     } catch (e) {
       failed++;
@@ -63,9 +76,9 @@ export default async () => {
   const updatedAt = new Date().toISOString();
   await writeDbToBlob(enriched, updatedAt);
   console.log(
-    JSON.stringify({ type: "enrich_cron_done", updated_at: updatedAt, count: enriched.length, failed }),
+    JSON.stringify({ type: "enrich_cron_done", updated_at: updatedAt, count: enriched.length, failed, measured_fields: measuredFields }),
   );
-  return Response.json({ ok: true, updated_at: updatedAt, count: enriched.length, failed });
+  return Response.json({ ok: true, updated_at: updatedAt, count: enriched.length, failed, measured_fields: measuredFields });
 };
 
 export const config = { schedule: "0 19 * * 0" };
