@@ -1,7 +1,86 @@
+import { useState } from "react";
 import { COLOR_VOCAB } from "./ColorTray.jsx";
 
 function colorHex(key) {
   return COLOR_VOCAB.find((c) => c.key === key)?.hex || "#999";
+}
+
+// Three framings per species, filled by filename convention in /public/photos:
+//   <中文名>_leaf.jpg / _close.jpg / _habit.jpg  (operator drops files; no DB edit)
+// The existing single <中文名>.jpg is treated as the 近景 default until a real
+// _close.jpg is supplied. Missing framings show a "待補" placeholder.
+const PHOTO_SLOTS = [
+  { key: "leaf", label: "葉", suffix: "_leaf", baseFallback: false },
+  { key: "close", label: "近景", suffix: "_close", baseFallback: true },
+  { key: "habit", label: "全株", suffix: "_habit", baseFallback: false },
+];
+
+function photoBase(dbPhoto) {
+  // "台灣馬醉木.jpg" -> "台灣馬醉木"
+  return (dbPhoto || "").replace(/\.[^.]+$/, "");
+}
+
+function PhotoThumb({ base, slot, alt }) {
+  // src resolution order: variant -> (近景 only) base photo -> placeholder
+  const variantUrl = base ? `/photos/${encodeURIComponent(base + slot.suffix)}.jpg` : null;
+  const baseUrl = base ? `/photos/${encodeURIComponent(base)}.jpg` : null;
+  const [src, setSrc] = useState(variantUrl);
+  const [failed, setFailed] = useState(!variantUrl);
+
+  function handleError() {
+    if (slot.baseFallback && src !== baseUrl && baseUrl) {
+      setSrc(baseUrl); // try the existing single photo as 近景
+    } else {
+      setFailed(true);
+    }
+  }
+
+  return (
+    <figure className="flex-1 min-w-0 m-0">
+      <div
+        className="relative rounded-xl overflow-hidden"
+        style={{ aspectRatio: "1 / 1", background: "var(--mat-ultraThin)" }}
+      >
+        {failed ? (
+          <div
+            className="absolute inset-0 flex items-center justify-center text-[10px]"
+            style={{
+              color: "var(--ink-quaternary)",
+              border: "1px dashed var(--hairline-dark)",
+              borderRadius: "12px",
+            }}
+          >
+            待補
+          </div>
+        ) : (
+          <img
+            src={src}
+            alt={`${alt} — ${slot.label}`}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={handleError}
+          />
+        )}
+      </div>
+      <figcaption
+        className="text-center text-[10px] mt-0.5"
+        style={{ color: "var(--ink-tertiary)" }}
+      >
+        {slot.label}
+      </figcaption>
+    </figure>
+  );
+}
+
+function PhotoStrip({ dbPhoto, alt }) {
+  const base = photoBase(dbPhoto);
+  return (
+    <div className="flex gap-2">
+      {PHOTO_SLOTS.map((slot) => (
+        <PhotoThumb key={slot.key} base={base} slot={slot} alt={alt} />
+      ))}
+    </div>
+  );
 }
 
 function Stars({ n }) {
@@ -51,7 +130,6 @@ function ColorDots({ keys, label }) {
 }
 
 export default function PlantCard({ plant, weak = false }) {
-  const photoUrl = `/photos/${encodeURIComponent(plant.db_photo)}`;
   return (
     <article
       className={weak ? "glass-thin p-4" : "glass p-4"}
@@ -60,36 +138,28 @@ export default function PlantCard({ plant, weak = false }) {
         ...(weak ? { borderLeft: "2px solid var(--accent-honey)" } : {}),
       }}
     >
-      <div className="flex gap-4">
-        <img
-          src={photoUrl}
-          alt={plant.db_name}
-          loading="lazy"
-          className="rounded-xl flex-shrink-0 object-cover"
-          style={{ width: 80, height: 80, background: "var(--mat-ultraThin)" }}
-          onError={(e) => (e.currentTarget.style.opacity = 0.3)}
-        />
-        <div className="flex-1 min-w-0">
-          <h3 className="font-display text-lg leading-tight truncate" style={{ color: "var(--ink-primary)" }}>
-            {plant.db_name}
-          </h3>
-          <div className="font-latin italic text-xs truncate" style={{ color: "var(--ink-secondary)" }}>
-            {plant.db_latin}
-          </div>
-          <div className="mt-1.5 flex items-center gap-2 text-xs">
-            <Stars n={plant.stars} />
-            <span style={{ color: "var(--ink-tertiary)" }}>
-              {plant.score?.toFixed?.(1) ?? plant.score} 分
+      <PhotoStrip dbPhoto={plant.db_photo} alt={plant.db_name} />
+
+      <div className="mt-3">
+        <h3 className="font-display text-lg leading-tight truncate" style={{ color: "var(--ink-primary)" }}>
+          {plant.db_name}
+        </h3>
+        <div className="font-latin italic text-xs truncate" style={{ color: "var(--ink-secondary)" }}>
+          {plant.db_latin}
+        </div>
+        <div className="mt-1.5 flex items-center gap-2 text-xs">
+          <Stars n={plant.stars} />
+          <span style={{ color: "var(--ink-tertiary)" }}>
+            {plant.score?.toFixed?.(1) ?? plant.score} 分
+          </span>
+          {weak && (
+            <span
+              className="text-[10px] px-1.5 py-0.5 rounded"
+              style={{ background: "var(--mat-thick)", color: "var(--accent-honey)" }}
+            >
+              弱匹配
             </span>
-            {weak && (
-              <span
-                className="text-[10px] px-1.5 py-0.5 rounded"
-                style={{ background: "var(--mat-thick)", color: "var(--accent-honey)" }}
-              >
-                弱匹配
-              </span>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
