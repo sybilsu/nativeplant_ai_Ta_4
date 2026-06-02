@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design tokens (per design.md §2) ─── */
+:root {
+  --ink-primary: rgba(15, 17, 21, 0.92);
+  --ink-secondary: rgba(15, 17, 21, 0.65);
+  --ink-tertiary: rgba(15, 17, 21, 0.42);
+  --ink-quaternary: rgba(15, 17, 21, 0.22);
+  --ink-on-dark: rgba(255, 255, 255, 0.92);
+
+  --accent-evergreen: #2a5d3f;
+  --accent-petal: #b85a6b;
+  --accent-honey: #c8a04d;
+
+  --star-filled: #c8a04d;
+  --star-empty: var(--ink-quaternary);
+
+  --mat-ultraThin: rgba(255, 255, 255, 0.30);
+  --mat-thin: rgba(255, 255, 255, 0.50);
+  --mat-regular: rgba(255, 255, 255, 0.68);
+  --mat-thick: rgba(255, 255, 255, 0.80);
+  --mat-ultraThick: rgba(255, 255, 255, 0.92);
+
+  --blur-ultraThin: blur(20px) saturate(180%);
+  --blur-thin: blur(28px) saturate(180%);
+  --blur-regular: blur(40px) saturate(180%);
+  --blur-thick: blur(50px) saturate(200%);
+  --blur-ultraThick: blur(60px) saturate(200%);
+
+  --hairline-light: rgba(255, 255, 255, 0.65);
+  --hairline-dark: rgba(15, 17, 21, 0.10);
+  --shadow-glass-sm: 0 1px 2px rgba(15, 17, 21, 0.04), 0 4px 12px rgba(15, 17, 21, 0.06);
+  --shadow-glass-md: 0 2px 4px rgba(15, 17, 21, 0.05), 0 12px 32px rgba(15, 17, 21, 0.10);
+  --shadow-glass-lg: 0 4px 8px rgba(15, 17, 21, 0.06), 0 24px 64px rgba(15, 17, 21, 0.14);
+
+  --ease-glass: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink-primary: rgba(255, 255, 255, 0.94);
+    --ink-secondary: rgba(255, 255, 255, 0.65);
+    --ink-tertiary: rgba(255, 255, 255, 0.42);
+    --ink-quaternary: rgba(255, 255, 255, 0.22);
+    --mat-ultraThin: rgba(28, 28, 30, 0.40);
+    --mat-thin: rgba(28, 28, 30, 0.58);
+    --mat-regular: rgba(28, 28, 30, 0.72);
+    --mat-thick: rgba(28, 28, 30, 0.84);
+    --mat-ultraThick: rgba(28, 28, 30, 0.94);
+    --hairline-light: rgba(255, 255, 255, 0.10);
+    --hairline-dark: rgba(0, 0, 0, 0.40);
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--font-body, system-ui);
+  color: var(--ink-primary);
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(42, 93, 63, 0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 80%, rgba(184, 90, 107, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 60% 40%, rgba(200, 160, 77, 0.10) 0%, transparent 50%),
+    linear-gradient(180deg, #f5f2eb 0%, #ebe6dc 50%, #e2dbcb 100%);
+  background-attachment: fixed;
+}
+
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 20%, rgba(42, 93, 63, 0.28) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 80%, rgba(184, 90, 107, 0.20) 0%, transparent 60%),
+      linear-gradient(180deg, #14161a 0%, #1c1f24 100%);
+  }
+}
+
+/* ─── Glass utility classes (per design.md §3) ─── */
+.glass {
+  background: var(--mat-regular);
+  backdrop-filter: var(--blur-regular);
+  -webkit-backdrop-filter: var(--blur-regular);
+  border: 0.5px solid var(--hairline-dark);
+  box-shadow: inset 0 0.5px 0 var(--hairline-light), var(--shadow-glass-md);
+  border-radius: 20px;
+}
+.glass-ultraThin { background: var(--mat-ultraThin); backdrop-filter: var(--blur-ultraThin); -webkit-backdrop-filter: var(--blur-ultraThin); border: 0.5px solid var(--hairline-dark); border-radius: 14px; }
+.glass-thin { background: var(--mat-thin); backdrop-filter: var(--blur-thin); -webkit-backdrop-filter: var(--blur-thin); border: 0.5px solid var(--hairline-dark); border-radius: 14px; }
+.glass-thick { background: var(--mat-thick); backdrop-filter: var(--blur-thick); -webkit-backdrop-filter: var(--blur-thick); border: 0.5px solid var(--hairline-dark); border-radius: 14px; }
+.glass-ultraThick { background: var(--mat-ultraThick); backdrop-filter: var(--blur-ultraThick); -webkit-backdrop-filter: var(--blur-ultraThick); border: 0.5px solid var(--hairline-dark); border-radius: 20px; }
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-ultraThin, .glass-thin, .glass-thick, .glass-ultraThick {
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    background: rgba(245, 242, 235, 0.96);
+  }
+}
+
+button { font-family: inherit; }
+button:focus-visible {
+  outline: 2px solid var(--accent-evergreen);
+  outline-offset: 2px;
+}

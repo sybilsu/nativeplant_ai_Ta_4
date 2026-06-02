@@ -1,5 +1,6 @@
 .env
 node_modules/
+dist/
 experiment/run_*/input.jpg
 
 # Pre-existing reference materials at repo root — kept locally only
