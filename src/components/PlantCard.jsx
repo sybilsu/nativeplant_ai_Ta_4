@@ -37,21 +37,22 @@ function PhotoThumb({ base, slot, alt }) {
 
   return (
     <figure className="flex-1 min-w-0 m-0">
-      {/* iOS-style frosted-glass frame: photo stays sharp, the ~3px ring around it
-          is translucent material + backdrop blur + inner highlight + soft shadow
-          (glass-thin = bg/blur/hairline/radius; box-shadow adds the depth). */}
+      {/* Photo tile floats above the glass plate (PhotoStrip) via its own drop
+          shadow — the depth/立體感 comes from this lift, not from a border. */}
       <div
-        className="relative glass-thin"
+        className="relative overflow-hidden"
         style={{
           aspectRatio: "1 / 1",
-          padding: 3,
-          boxShadow: "inset 0 0.5px 0 var(--hairline-light), var(--shadow-glass-sm)",
+          borderRadius: 10,
+          background: "var(--mat-ultraThin)",
+          border: "0.5px solid var(--hairline-dark)",
+          boxShadow: "0 1px 2px rgba(15,17,21,0.20), 0 5px 12px rgba(15,17,21,0.16)",
         }}
       >
         {failed ? (
           <div
-            className="w-full h-full flex items-center justify-center text-[10px]"
-            style={{ color: "var(--ink-quaternary)", borderRadius: 11 }}
+            className="absolute inset-0 flex items-center justify-center text-[10px]"
+            style={{ color: "var(--ink-quaternary)" }}
           >
             待補
           </div>
@@ -60,14 +61,13 @@ function PhotoThumb({ base, slot, alt }) {
             src={src}
             alt={`${alt} — ${slot.label}`}
             loading="lazy"
-            className="block w-full h-full object-cover"
-            style={{ borderRadius: 11 }}
+            className="absolute inset-0 w-full h-full object-cover"
             onError={handleError}
           />
         )}
       </div>
       <figcaption
-        className="text-center text-[10px] mt-0.5"
+        className="text-center text-[10px] mt-1"
         style={{ color: "var(--ink-tertiary)" }}
       >
         {slot.label}
@@ -78,8 +78,17 @@ function PhotoThumb({ base, slot, alt }) {
 
 function PhotoStrip({ dbPhoto, alt }) {
   const base = photoBase(dbPhoto);
+  // Frosted-glass plate: the photos float on this surface (generous padding so
+  // the glass reads as a surface, not a border; inset highlight + soft shadow
+  // give it its own depth).
   return (
-    <div className="flex gap-2">
+    <div
+      className="glass-thin flex gap-2.5"
+      style={{
+        padding: 10,
+        boxShadow: "inset 0 1px 0 var(--hairline-light), var(--shadow-glass-md)",
+      }}
+    >
       {PHOTO_SLOTS.map((slot) => (
         <PhotoThumb key={slot.key} base={base} slot={slot} alt={alt} />
       ))}
