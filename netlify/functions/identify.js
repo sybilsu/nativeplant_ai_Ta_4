@@ -5,28 +5,30 @@
 //
 // Cost: ~$0.03–0.04 per call (Sonnet) or ~$0.02 (Haiku fallback on 529).
 
-import { readFile, stat } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { readDbFromBlob } from "../../lib/db-store.mjs";
 
 const moduleDir = dirname(fileURLToPath(import.meta.url));
 
-// Cached DB load (Netlify reuses function instances within an invocation lifecycle)
+// Cached DB load (Netlify reuses function instances within an invocation lifecycle).
+// Prefer the writable Blob copy (enrich-cron output); fall back to the bundled seed.
 let _dbCache = null;
 async function loadDb() {
   if (_dbCache) return _dbCache;
+  const fromBlob = await readDbFromBlob();
+  if (fromBlob) {
+    _dbCache = { db: fromBlob.db, version: fromBlob.updatedAt || "blob" };
+    return _dbCache;
+  }
   const candidates = [
     resolve(moduleDir, "../../data/plants_enriched.json"),
     resolve(process.cwd(), "data/plants_enriched.json"),
   ];
   for (const p of candidates) {
     try {
-      const raw = await readFile(p, "utf-8");
-      const s = await stat(p);
-      _dbCache = {
-        db: JSON.parse(raw),
-        version: s.mtime.toISOString().slice(0, 10),
-      };
+      _dbCache = { db: JSON.parse(await readFile(p, "utf-8")), version: "seed" };
       return _dbCache;
     } catch {
       /* try next */
@@ -133,25 +135,12 @@ function detectMime(buf) {
 }
 
 const RETRYABLE = new Set([408, 429, 500, 502, 503, 504, 529]);
+const ATTEMPT_TIMEOUT_MS = 10000; // hard cap per Vision call
 
-async function callVision(b64, mediaType, apiKey, model) {
-  const body = JSON.stringify({
-    model,
-    max_tokens: 4000,
-    messages: [
-      {
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: mediaType, data: b64 } },
-          { type: "text", text: VISION_PROMPT },
-        ],
-      },
-    ],
-  });
-  const delays = [3000, 9000, 27000];
-  let lastErr;
-  for (let i = 0; i <= delays.length; i++) {
-    if (i > 0) await new Promise((r) => setTimeout(r, delays[i - 1]));
+async function callOnce(b64, mediaType, apiKey, model) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ATTEMPT_TIMEOUT_MS);
+  try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -159,22 +148,57 @@ async function callVision(b64, mediaType, apiKey, model) {
         "anthropic-version": "2023-06-01",
         "content-type": "application/json",
       },
-      body,
+      body: JSON.stringify({
+        model,
+        max_tokens: 4000,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "image", source: { type: "base64", media_type: mediaType, data: b64 } },
+              { type: "text", text: VISION_PROMPT },
+            ],
+          },
+        ],
+      }),
+      signal: ctrl.signal,
     });
     if (res.ok) {
       const data = await res.json();
-      const text = data.content[0].text.trim();
-      const cleaned = text
+      const cleaned = data.content[0].text
+        .trim()
         .replace(/^```(?:json)?\s*/i, "")
         .replace(/```\s*$/i, "")
         .trim();
-      return { json: JSON.parse(cleaned), usage: data.usage, model };
+      return { ok: true, json: JSON.parse(cleaned), usage: data.usage, model };
     }
-    const errText = await res.text();
-    lastErr = new Error(`Vision API ${res.status}: ${errText}`);
-    if (!RETRYABLE.has(res.status)) throw lastErr;
+    return { ok: false, status: res.status, error: `Vision API ${res.status}: ${await res.text()}` };
+  } catch (e) {
+    // Abort (timeout) or network error — treat as retryable so we fall through to Haiku.
+    return { ok: false, status: 504, error: `Vision request failed: ${e.name === "AbortError" ? "timeout" : e.message}` };
+  } finally {
+    clearTimeout(timer);
   }
-  throw lastErr;
+}
+
+// Bounded retry: Sonnet primary, then ONE Haiku fallback on a retryable failure.
+// Total ≤ ~21s (10s + 1s + 10s) to stay within Netlify's synchronous-function
+// limit. The old [3s,9s,27s] backoff + full Haiku rerun could reach ~80s and was
+// guaranteed to be killed by the platform exactly under the 529 load it targeted.
+async function callVision(b64, mediaType, apiKey, primaryModel, fallbackModel) {
+  const first = await callOnce(b64, mediaType, apiKey, primaryModel);
+  if (first.ok) return first;
+  if (!RETRYABLE.has(first.status)) {
+    const e = new Error(first.error);
+    e.retryable = false;
+    throw e;
+  }
+  await new Promise((r) => setTimeout(r, 1000));
+  const second = await callOnce(b64, mediaType, apiKey, fallbackModel);
+  if (second.ok) return second;
+  const e = new Error(second.error);
+  e.retryable = true;
+  throw e;
 }
 
 export default async (req) => {
@@ -209,17 +233,14 @@ export default async (req) => {
 
   let visionResult;
   try {
-    visionResult = await callVision(b64, mediaType, apiKey, primaryModel);
+    visionResult = await callVision(b64, mediaType, apiKey, primaryModel, fallbackModel);
   } catch (e) {
-    if (/529|overloaded|Overloaded/.test(e.message)) {
-      try {
-        visionResult = await callVision(b64, mediaType, apiKey, fallbackModel);
-      } catch (e2) {
-        return Response.json({ error: `Vision failed (primary+fallback): ${e2.message}` }, { status: 502 });
-      }
-    } else {
-      return Response.json({ error: e.message }, { status: 502 });
-    }
+    // Stay within the function time budget rather than blocking on long retries:
+    // return a friendly, retryable error and let the client resubmit.
+    return Response.json(
+      { error: "辨識服務忙線,請稍後再試", detail: e.message, retryable: e.retryable !== false },
+      { status: 503 },
+    );
   }
 
   const identified = visionResult.json.identified || [];
