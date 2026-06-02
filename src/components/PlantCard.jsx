@@ -37,18 +37,21 @@ function PhotoThumb({ base, slot, alt }) {
 
   return (
     <figure className="flex-1 min-w-0 m-0">
+      {/* iOS-style frosted-glass frame: photo stays sharp, the ~3px ring around it
+          is translucent material + backdrop blur + inner highlight + soft shadow
+          (glass-thin = bg/blur/hairline/radius; box-shadow adds the depth). */}
       <div
-        className="relative rounded-xl overflow-hidden"
-        style={{ aspectRatio: "1 / 1", background: "var(--mat-ultraThin)" }}
+        className="relative glass-thin"
+        style={{
+          aspectRatio: "1 / 1",
+          padding: 3,
+          boxShadow: "inset 0 0.5px 0 var(--hairline-light), var(--shadow-glass-sm)",
+        }}
       >
         {failed ? (
           <div
-            className="absolute inset-0 flex items-center justify-center text-[10px]"
-            style={{
-              color: "var(--ink-quaternary)",
-              border: "1px dashed var(--hairline-dark)",
-              borderRadius: "12px",
-            }}
+            className="w-full h-full flex items-center justify-center text-[10px]"
+            style={{ color: "var(--ink-quaternary)", borderRadius: 11 }}
           >
             待補
           </div>
@@ -57,7 +60,8 @@ function PhotoThumb({ base, slot, alt }) {
             src={src}
             alt={`${alt} — ${slot.label}`}
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="block w-full h-full object-cover"
+            style={{ borderRadius: 11 }}
             onError={handleError}
           />
         )}
