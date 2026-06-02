@@ -100,6 +100,33 @@ body {
   }
 }
 
+/* Floating photo tiles (PlantCard) — entrance rise + interactive hover lift,
+   so the layered glass depth feels alive. */
+@keyframes photoRise {
+  from { opacity: 0; transform: translateY(10px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.photo-tile {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--mat-ultraThin);
+  border: 0.5px solid var(--hairline-dark);
+  box-shadow: 0 1px 2px rgba(15, 17, 21, 0.20), 0 5px 12px rgba(15, 17, 21, 0.16);
+  transition: transform 0.32s var(--ease-glass), box-shadow 0.32s var(--ease-glass);
+  animation: photoRise 0.55s var(--ease-glass) both;
+  will-change: transform;
+}
+.photo-tile:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 6px 12px rgba(15, 17, 21, 0.22), 0 18px 34px rgba(15, 17, 21, 0.20);
+  z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo-tile { animation: none; transition: none; }
+  .photo-tile:hover { transform: none; }
+}
+
 button { font-family: inherit; }
 button:focus-visible {
   outline: 2px solid var(--accent-evergreen);

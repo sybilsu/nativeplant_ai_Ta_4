@@ -20,7 +20,7 @@ function photoBase(dbPhoto) {
   return (dbPhoto || "").replace(/\.[^.]+$/, "");
 }
 
-function PhotoThumb({ base, slot, alt }) {
+function PhotoThumb({ base, slot, alt, index = 0 }) {
   // src resolution order: variant -> (近景 only) base photo -> placeholder
   const variantUrl = base ? `/photos/${encodeURIComponent(base + slot.suffix)}.jpg` : null;
   const baseUrl = base ? `/photos/${encodeURIComponent(base)}.jpg` : null;
@@ -38,16 +38,11 @@ function PhotoThumb({ base, slot, alt }) {
   return (
     <figure className="flex-1 min-w-0 m-0">
       {/* Photo tile floats above the glass plate (PhotoStrip) via its own drop
-          shadow — the depth/立體感 comes from this lift, not from a border. */}
+          shadow — depth/立體感 from the lift, not a border. `.photo-tile` (index.css)
+          adds the entrance rise + hover lift; stagger via animation-delay. */}
       <div
-        className="relative overflow-hidden"
-        style={{
-          aspectRatio: "1 / 1",
-          borderRadius: 10,
-          background: "var(--mat-ultraThin)",
-          border: "0.5px solid var(--hairline-dark)",
-          boxShadow: "0 1px 2px rgba(15,17,21,0.20), 0 5px 12px rgba(15,17,21,0.16)",
-        }}
+        className="photo-tile"
+        style={{ aspectRatio: "1 / 1", animationDelay: `${index * 90}ms` }}
       >
         {failed ? (
           <div
@@ -89,8 +84,8 @@ function PhotoStrip({ dbPhoto, alt }) {
         boxShadow: "inset 0 1px 0 var(--hairline-light), var(--shadow-glass-md)",
       }}
     >
-      {PHOTO_SLOTS.map((slot) => (
-        <PhotoThumb key={slot.key} base={base} slot={slot} alt={alt} />
+      {PHOTO_SLOTS.map((slot, i) => (
+        <PhotoThumb key={slot.key} base={base} slot={slot} alt={alt} index={i} />
       ))}
     </div>
   );
