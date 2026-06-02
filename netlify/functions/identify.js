@@ -9,14 +9,14 @@ import { readFile, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const moduleDir = dirname(fileURLToPath(import.meta.url));
 
 // Cached DB load (Netlify reuses function instances within an invocation lifecycle)
 let _dbCache = null;
 async function loadDb() {
   if (_dbCache) return _dbCache;
   const candidates = [
-    resolve(__dirname, "../../data/plants_enriched.json"),
+    resolve(moduleDir, "../../data/plants_enriched.json"),
     resolve(process.cwd(), "data/plants_enriched.json"),
   ];
   for (const p of candidates) {

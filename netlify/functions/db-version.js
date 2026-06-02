@@ -2,11 +2,11 @@ import { readFile, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const moduleDir = dirname(fileURLToPath(import.meta.url));
 
 export default async () => {
   const candidates = [
-    resolve(__dirname, "../../data/plants_enriched.json"),
+    resolve(moduleDir, "../../data/plants_enriched.json"),
     resolve(process.cwd(), "data/plants_enriched.json"),
   ];
   for (const p of candidates) {
