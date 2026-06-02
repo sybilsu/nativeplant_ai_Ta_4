@@ -135,11 +135,15 @@ function detectMime(buf) {
 }
 
 const RETRYABLE = new Set([408, 429, 500, 502, 503, 504, 529]);
-const ATTEMPT_TIMEOUT_MS = 10000; // hard cap per Vision call
+// Haiku-primary: Sonnet Vision empirically needs >16s for this workload and can't
+// fit Netlify's ~26s synchronous limit alongside a fallback, so identify runs
+// Haiku (fast, cheap, cost-optimal). 12s cap × up to 2 attempts ≤ ~25s. If
+// Sonnet-quality vision is needed later, move identify to a background function.
+const VISION_TIMEOUT_MS = 12000;
 
-async function callOnce(b64, mediaType, apiKey, model) {
+async function callOnce(b64, mediaType, apiKey, model, timeoutMs) {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), ATTEMPT_TIMEOUT_MS);
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -181,23 +185,19 @@ async function callOnce(b64, mediaType, apiKey, model) {
   }
 }
 
-// Bounded retry: Sonnet primary, then ONE Haiku fallback on a retryable failure.
-// Total ≤ ~21s (10s + 1s + 10s) to stay within Netlify's synchronous-function
-// limit. The old [3s,9s,27s] backoff + full Haiku rerun could reach ~80s and was
-// guaranteed to be killed by the platform exactly under the 529 load it targeted.
-async function callVision(b64, mediaType, apiKey, primaryModel, fallbackModel) {
-  const first = await callOnce(b64, mediaType, apiKey, primaryModel);
-  if (first.ok) return first;
-  if (!RETRYABLE.has(first.status)) {
-    const e = new Error(first.error);
-    e.retryable = false;
-    throw e;
+// Single model (Haiku) with one retry on transient errors. The old [3s,9s,27s]
+// backoff + Sonnet→Haiku rerun could reach ~80s and was killed by the platform
+// exactly under the 529 load it targeted.
+async function callVision(b64, mediaType, apiKey, model) {
+  let last;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, 1000));
+    last = await callOnce(b64, mediaType, apiKey, model, VISION_TIMEOUT_MS);
+    if (last.ok) return last;
+    if (!RETRYABLE.has(last.status)) break;
   }
-  await new Promise((r) => setTimeout(r, 1000));
-  const second = await callOnce(b64, mediaType, apiKey, fallbackModel);
-  if (second.ok) return second;
-  const e = new Error(second.error);
-  e.retryable = true;
+  const e = new Error(last.error);
+  e.retryable = RETRYABLE.has(last.status);
   throw e;
 }
 
@@ -228,12 +228,11 @@ export default async (req) => {
   const mediaType = detectMime(imgBuf);
   const b64 = imgBuf.toString("base64");
 
-  const primaryModel = process.env.SONNET_MODEL || "claude-sonnet-4-6";
-  const fallbackModel = process.env.HAIKU_MODEL || "claude-haiku-4-5-20251001";
+  const visionModel = process.env.HAIKU_MODEL || "claude-haiku-4-5-20251001";
 
   let visionResult;
   try {
-    visionResult = await callVision(b64, mediaType, apiKey, primaryModel, fallbackModel);
+    visionResult = await callVision(b64, mediaType, apiKey, visionModel);
   } catch (e) {
     // Stay within the function time budget rather than blocking on long retries:
     // return a friendly, retryable error and let the client resubmit.
