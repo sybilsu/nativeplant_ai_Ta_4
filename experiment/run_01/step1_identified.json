@@ -1,0 +1,259 @@
+{
+  "identified": [
+    {
+      "id": "P1",
+      "common_name": "銀葉菊",
+      "category": "草本",
+      "form": "叢生草本",
+      "foliage": "羽狀深裂，互生，革質感，葉面密被銀白色絨毛",
+      "height_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "觀葉；夏季頭狀花序",
+      "confidence": "高"
+    },
+    {
+      "id": "P2",
+      "common_name": "蔥蒜屬觀賞蔥（Allium spp.）",
+      "category": "草本",
+      "form": "直立草本，球根性",
+      "foliage": "線形，基生，全緣，直立",
+      "height_estimate_m": [
+        0.4,
+        0.8
+      ],
+      "spread_estimate_m": [
+        0.1,
+        0.2
+      ],
+      "ornament": "春末至夏季球形繖形花序",
+      "confidence": "高"
+    },
+    {
+      "id": "P3",
+      "common_name": "毛地黃（Digitalis purpurea）",
+      "category": "草本",
+      "form": "直立草本",
+      "foliage": "卵形至橢圓形，互生，鋸齒緣，葉面具皺紋",
+      "height_estimate_m": [
+        0.8,
+        1.5
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "夏季頂生總狀花序，管狀花",
+      "confidence": "高"
+    },
+    {
+      "id": "P4",
+      "common_name": "紅纈草（Centranthus ruber）",
+      "category": "草本",
+      "form": "直立叢生草本",
+      "foliage": "卵形至披針形，對生，全緣，略肉質",
+      "height_estimate_m": [
+        0.5,
+        0.9
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "夏季聚繖花序，密集小花",
+      "confidence": "高"
+    },
+    {
+      "id": "P5",
+      "common_name": "薰衣草（Lavandula spp.）",
+      "category": "灌木",
+      "form": "叢生小灌木",
+      "foliage": "線形至披針形，對生，全緣，灰綠色",
+      "height_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "ornament": "夏季穗狀花序，直立細長花穗",
+      "confidence": "中"
+    },
+    {
+      "id": "P6",
+      "common_name": "針茅屬觀賞草（Stipa / Nassella spp.）",
+      "category": "草本",
+      "form": "叢生禾草狀草本",
+      "foliage": "線形，基生叢出，全緣，細長直立",
+      "height_estimate_m": [
+        0.4,
+        0.8
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "夏季羽毛狀穗形花序",
+      "confidence": "中"
+    },
+    {
+      "id": "P7",
+      "common_name": "鼠尾草屬（Salvia spp.）",
+      "category": "草本",
+      "form": "直立草本",
+      "foliage": "卵形，對生，鋸齒緣，葉面具皺紋",
+      "height_estimate_m": [
+        0.4,
+        0.9
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "夏季輪繖花序穗狀排列",
+      "confidence": "中"
+    },
+    {
+      "id": "P8",
+      "common_name": "景天屬多肉（Sedum spp.）",
+      "category": "地被",
+      "form": "匍匐地被",
+      "foliage": "卵形至倒卵形，互生，全緣，肉質",
+      "height_estimate_m": [
+        0.05,
+        0.2
+      ],
+      "spread_estimate_m": [
+        0.2,
+        0.5
+      ],
+      "ornament": "夏季聚繖花序，星形小花",
+      "confidence": "中"
+    },
+    {
+      "id": "P9",
+      "common_name": "未明_線形葉叢生禾草",
+      "category": "草本",
+      "form": "叢生草本",
+      "foliage": "線形，基生，全緣，硬挺直立",
+      "height_estimate_m": [
+        0.5,
+        1
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    },
+    {
+      "id": "P10",
+      "common_name": "大戟屬（Euphorbia spp.）",
+      "category": "草本",
+      "form": "叢生直立草本",
+      "foliage": "線形至披針形，輪生，全緣，黃綠色",
+      "height_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "春夏季杯狀聚繖花序，苞葉顯著",
+      "confidence": "中"
+    },
+    {
+      "id": "P11",
+      "common_name": "老鸛草屬（Geranium spp.）",
+      "category": "草本",
+      "form": "叢生草本",
+      "foliage": "掌狀深裂，互生，鋸齒緣",
+      "height_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "夏季單生五瓣花",
+      "confidence": "中"
+    },
+    {
+      "id": "P12",
+      "common_name": "蓍草（Achillea millefolium）",
+      "category": "草本",
+      "form": "直立草本",
+      "foliage": "羽狀細裂，互生，細羽狀複葉質感",
+      "height_estimate_m": [
+        0.4,
+        0.7
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "夏季傘房花序，密集頭狀小花",
+      "confidence": "中"
+    },
+    {
+      "id": "P13",
+      "common_name": "未明_矮性叢生地被草本",
+      "category": "地被",
+      "form": "叢生低矮地被",
+      "foliage": "橢圓形，對生，全緣",
+      "height_estimate_m": [
+        0.05,
+        0.15
+      ],
+      "spread_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    },
+    {
+      "id": "P14",
+      "common_name": "柳穿魚屬（Linaria spp.）",
+      "category": "草本",
+      "form": "直立纖細草本",
+      "foliage": "線形至披針形，互生，全緣",
+      "height_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "spread_estimate_m": [
+        0.1,
+        0.2
+      ],
+      "ornament": "夏季頂生總狀花序，距狀唇形花",
+      "confidence": "低"
+    },
+    {
+      "id": "P15",
+      "common_name": "未明_匍匐蔓性地被灌木",
+      "category": "地被",
+      "form": "匍匐蔓延地被",
+      "foliage": "卵形，對生，全緣，略革質",
+      "height_estimate_m": [
+        0.1,
+        0.25
+      ],
+      "spread_estimate_m": [
+        0.5,
+        1
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    }
+  ]
+}

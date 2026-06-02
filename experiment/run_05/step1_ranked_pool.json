@@ -1,0 +1,39 @@
+{
+  "run": "run_05",
+  "identified_input_count": 6,
+  "pool": {
+    "灌木": [],
+    "草本": [],
+    "地被": [
+      {
+        "db_name": "麥門冬",
+        "db_latin": "Ophiopogon japonicus (Thunb.) Ker Gawl.",
+        "db_photo": "麥門冬.jpg",
+        "db_role": "Ground cover",
+        "db_foliage": "線形草葉，革質，深綠色常綠",
+        "db_height": "0.2-0.4m",
+        "db_spread": "0.3-1m",
+        "db_flw_season": "Summer (6-8月)",
+        "db_struct_int": "Year-round (常綠葉)",
+        "flower_color": [
+          "白",
+          "紫"
+        ],
+        "leaf_color": [
+          "綠"
+        ],
+        "fruit_color": [],
+        "score": 75.8,
+        "stars": 4,
+        "matched_input": "P4",
+        "breakdown": {
+          "category": 50,
+          "foliage": 15,
+          "height": 10,
+          "spread": 0.8,
+          "ornament": 0
+        }
+      }
+    ]
+  }
+}

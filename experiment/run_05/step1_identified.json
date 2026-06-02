@@ -1,0 +1,108 @@
+{
+  "identified": [
+    {
+      "id": "P1",
+      "common_name": "白千層",
+      "category": "喬木",
+      "form": "單幹樹",
+      "foliage": "線形，互生，革質",
+      "height_estimate_m": [
+        4,
+        6
+      ],
+      "spread_estimate_m": [
+        2.5,
+        3.5
+      ],
+      "ornament": "觀賞樹皮（白色剝落狀）",
+      "confidence": "高",
+      "note": "主體為喬木，排除"
+    },
+    {
+      "id": "P2",
+      "common_name": "蒲葵",
+      "category": "喬木",
+      "form": "叢生灌木狀或小喬木",
+      "foliage": "掌狀複葉，互生",
+      "height_estimate_m": [
+        1.5,
+        2.5
+      ],
+      "spread_estimate_m": [
+        1.5,
+        2
+      ],
+      "ornament": "觀葉",
+      "confidence": "中",
+      "note": "灌木規模但為喬木類，排除"
+    },
+    {
+      "id": "P3",
+      "common_name": "未明_細葉灌木",
+      "category": "灌木",
+      "form": "叢生灌木",
+      "foliage": "線形或披針形細葉，互生，革質",
+      "height_estimate_m": [
+        0.8,
+        1.2
+      ],
+      "spread_estimate_m": [
+        0.6,
+        1
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    },
+    {
+      "id": "P4",
+      "common_name": "未明_地被植物群",
+      "category": "地被",
+      "form": "匍匐叢生地被",
+      "foliage": "小型葉，革質",
+      "height_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "spread_estimate_m": [
+        0.8,
+        1.5
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    },
+    {
+      "id": "P5",
+      "common_name": "未明_細葉灌木群",
+      "category": "灌木",
+      "form": "叢生灌木",
+      "foliage": "線形細葉，互生",
+      "height_estimate_m": [
+        0.6,
+        1
+      ],
+      "spread_estimate_m": [
+        0.8,
+        1.2
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    },
+    {
+      "id": "P6",
+      "common_name": "未明_草本植物",
+      "category": "草本",
+      "form": "叢生直立草本",
+      "foliage": "線形或帶狀葉",
+      "height_estimate_m": [
+        0.4,
+        0.7
+      ],
+      "spread_estimate_m": [
+        0.5,
+        0.8
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    }
+  ]
+}

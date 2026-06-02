@@ -1,0 +1,70 @@
+{
+  "run": "run_01",
+  "identified_input_count": 15,
+  "pool": {
+    "灌木": [],
+    "草本": [
+      {
+        "db_name": "阿里山油菊",
+        "db_latin": "Dendranthema arisanense (Hayata) Y.Ling & C.Shih",
+        "db_photo": "阿里山油菊.jpg",
+        "db_role": "Primary",
+        "db_foliage": "羽狀深裂，互生，灰綠色",
+        "db_height": "0.5-1m",
+        "db_spread": "0.3-0.6m",
+        "db_flw_season": "Fall-Winter (10-12月)",
+        "db_struct_int": "Fall (黃色頭狀花序)",
+        "flower_color": [
+          "黃"
+        ],
+        "leaf_color": [
+          "灰",
+          "綠"
+        ],
+        "fruit_color": [],
+        "score": 78.9,
+        "stars": 4,
+        "matched_input": "P1",
+        "breakdown": {
+          "category": 50,
+          "foliage": 22.5,
+          "height": 1.4,
+          "spread": 3.3,
+          "ornament": 1.7
+        }
+      },
+      {
+        "db_name": "青葙",
+        "db_latin": "Celosia argentea L.",
+        "db_photo": "青葙.jpg",
+        "db_role": "Primary",
+        "db_foliage": "披針形至線形，互生",
+        "db_height": "0.4-1.5m",
+        "db_spread": "0.3-0.6m",
+        "db_flw_season": "Summer-Fall (5-10月)",
+        "db_struct_int": "Summer-Fall (穗狀花序)",
+        "flower_color": [
+          "銀",
+          "白",
+          "粉",
+          "紅"
+        ],
+        "leaf_color": [
+          "綠"
+        ],
+        "fruit_color": [],
+        "score": 75.7,
+        "stars": 4,
+        "matched_input": "P14",
+        "breakdown": {
+          "category": 50,
+          "foliage": 24,
+          "height": 1.7,
+          "spread": 0,
+          "ornament": 0
+        }
+      }
+    ],
+    "地被": []
+  }
+}

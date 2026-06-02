@@ -1,0 +1,9 @@
+.env
+node_modules/
+experiment/run_*/input.jpg
+
+# Pre-existing reference materials at repo root — kept locally only
+/*.pdf
+/5b3*.png
+/5b3*.jpg
+

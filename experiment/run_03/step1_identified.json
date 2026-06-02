@@ -1,0 +1,106 @@
+{
+  "identified": [
+    {
+      "id": "P1",
+      "common_name": "黃金葉",
+      "category": "灌木",
+      "form": "叢生灌木",
+      "foliage": "線形，互生，全緣",
+      "height_estimate_m": [
+        0.6,
+        1.2
+      ],
+      "spread_estimate_m": [
+        0.8,
+        1.5
+      ],
+      "ornament": "觀葉",
+      "confidence": "中"
+    },
+    {
+      "id": "P2",
+      "common_name": "鼠尾草",
+      "category": "草本",
+      "form": "直立叢生草本",
+      "foliage": "披針形，對生，全緣至微鋸齒緣",
+      "height_estimate_m": [
+        0.4,
+        0.8
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "ornament": "夏季穗狀花序",
+      "confidence": "高"
+    },
+    {
+      "id": "P3",
+      "common_name": "銀葉菊",
+      "category": "地被",
+      "form": "匍匐蔓延地被",
+      "foliage": "羽狀分裂，銀灰色，互生",
+      "height_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "spread_estimate_m": [
+        0.5,
+        1
+      ],
+      "ornament": "夏季小型花序",
+      "confidence": "中"
+    },
+    {
+      "id": "P4",
+      "common_name": "未明_黃色小花草本",
+      "category": "草本",
+      "form": "直立草本",
+      "foliage": "線形至披針形，互生",
+      "height_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "spread_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "ornament": "夏季小型花序",
+      "confidence": "低"
+    },
+    {
+      "id": "P5",
+      "common_name": "未明_白花蔓延灌木",
+      "category": "灌木",
+      "form": "蔓延低灌木",
+      "foliage": "線形至羽狀，細膩，互生",
+      "height_estimate_m": [
+        0.4,
+        0.8
+      ],
+      "spread_estimate_m": [
+        0.6,
+        1.2
+      ],
+      "ornament": "春夏季細小白花",
+      "confidence": "低"
+    },
+    {
+      "id": "P6",
+      "common_name": "未明_灰綠色地被草本",
+      "category": "地被",
+      "form": "匍匐地被",
+      "foliage": "線形，細密，銀灰綠色",
+      "height_estimate_m": [
+        0.15,
+        0.3
+      ],
+      "spread_estimate_m": [
+        0.4,
+        0.8
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    }
+  ]
+}

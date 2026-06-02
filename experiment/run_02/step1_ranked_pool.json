@@ -1,0 +1,38 @@
+{
+  "run": "run_02",
+  "identified_input_count": 10,
+  "pool": {
+    "灌木": [],
+    "草本": [
+      {
+        "db_name": "台灣金絲桃",
+        "db_latin": "Hypericum formosanum Maxim.",
+        "db_photo": "台灣金絲桃.jpg",
+        "db_role": "Filler",
+        "db_foliage": "對生橢圓卵形，具透明腺點",
+        "db_height": "0.3-1m",
+        "db_spread": "0.3-0.8m",
+        "db_flw_season": "Summer (6-8月)",
+        "db_struct_int": "Summer (黃色5瓣花)",
+        "flower_color": [
+          "黃"
+        ],
+        "leaf_color": [
+          "綠"
+        ],
+        "fruit_color": [],
+        "score": 77.3,
+        "stars": 4,
+        "matched_input": "P8",
+        "breakdown": {
+          "category": 50,
+          "foliage": 24,
+          "height": 2.5,
+          "spread": 0.8,
+          "ornament": 0
+        }
+      }
+    ],
+    "地被": []
+  }
+}

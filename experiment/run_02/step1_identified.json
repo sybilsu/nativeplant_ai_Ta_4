@@ -1,0 +1,174 @@
+{
+  "identified": [
+    {
+      "id": "P1",
+      "common_name": "未明_細稈叢生禾草",
+      "category": "草本",
+      "form": "叢生草本",
+      "foliage": "線形、互生、全緣、細長",
+      "height_estimate_m": [
+        0.8,
+        1.5
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.6
+      ],
+      "ornament": "夏季纖細圓錐花序，種穗輕盈飄逸",
+      "confidence": "中"
+    },
+    {
+      "id": "P2",
+      "common_name": "未明_高莖禾草",
+      "category": "草本",
+      "form": "直立草本",
+      "foliage": "線形、基生與莖生、全緣",
+      "height_estimate_m": [
+        1.2,
+        1.8
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "夏季高挺羽狀圓錐花序",
+      "confidence": "低"
+    },
+    {
+      "id": "P3",
+      "common_name": "翠雀花（或飛燕草）",
+      "category": "草本",
+      "form": "直立草本",
+      "foliage": "掌狀深裂、互生、鋸齒緣",
+      "height_estimate_m": [
+        0.6,
+        1.2
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.5
+      ],
+      "ornament": "夏季直立總狀花序，花形如距",
+      "confidence": "中"
+    },
+    {
+      "id": "P4",
+      "common_name": "澤蘭屬植物（Joe-Pye Weed類）",
+      "category": "草本",
+      "form": "直立叢生草本",
+      "foliage": "卵形至披針形、對生或輪生、鋸齒緣",
+      "height_estimate_m": [
+        0.8,
+        1.5
+      ],
+      "spread_estimate_m": [
+        0.5,
+        0.9
+      ],
+      "ornament": "夏末至秋季傘房狀複頭花序",
+      "confidence": "中"
+    },
+    {
+      "id": "P5",
+      "common_name": "火星花（雄黃蘭）",
+      "category": "草本",
+      "form": "直立叢生草本",
+      "foliage": "劍形、基生、全緣",
+      "height_estimate_m": [
+        0.5,
+        0.9
+      ],
+      "spread_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "ornament": "夏季穗狀花序，花朵漏斗形",
+      "confidence": "中"
+    },
+    {
+      "id": "P6",
+      "common_name": "未明_白色小菊類草本",
+      "category": "草本",
+      "form": "直立或半直立草本",
+      "foliage": "披針形至卵形、互生、鋸齒緣",
+      "height_estimate_m": [
+        0.3,
+        0.7
+      ],
+      "spread_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "ornament": "夏季頭狀花序，具明顯舌狀花",
+      "confidence": "低"
+    },
+    {
+      "id": "P7",
+      "common_name": "未明_低矮蔓生地被草本",
+      "category": "地被",
+      "form": "匍匐地被",
+      "foliage": "卵形、對生、全緣至淺鋸齒緣",
+      "height_estimate_m": [
+        0.05,
+        0.2
+      ],
+      "spread_estimate_m": [
+        0.3,
+        0.8
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    },
+    {
+      "id": "P8",
+      "common_name": "未明_小花淡紫色草本",
+      "category": "草本",
+      "form": "直立草本",
+      "foliage": "卵形至橢圓形、對生、鋸齒緣",
+      "height_estimate_m": [
+        0.2,
+        0.5
+      ],
+      "spread_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "ornament": "夏秋季小型花序",
+      "confidence": "低"
+    },
+    {
+      "id": "P9",
+      "common_name": "未明_叢生中型禾草",
+      "category": "草本",
+      "form": "叢生草本",
+      "foliage": "線形、全緣、基生叢狀",
+      "height_estimate_m": [
+        0.4,
+        0.8
+      ],
+      "spread_estimate_m": [
+        0.2,
+        0.4
+      ],
+      "ornament": "夏季細密穗狀花序",
+      "confidence": "低"
+    },
+    {
+      "id": "P10",
+      "common_name": "未明_寬葉草本（前景大葉植物）",
+      "category": "草本",
+      "form": "直立草本",
+      "foliage": "卵形至寬橢圓形、互生、明顯葉脈、鋸齒緣",
+      "height_estimate_m": [
+        0.5,
+        1
+      ],
+      "spread_estimate_m": [
+        0.4,
+        0.8
+      ],
+      "ornament": "觀葉",
+      "confidence": "低"
+    }
+  ]
+}
